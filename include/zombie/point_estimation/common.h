@@ -66,17 +66,11 @@ struct WalkSettings {
     float epsilonShellForReflectingBoundary;
     float silhouettePrecision;
     float russianRouletteThreshold;
-    int maxWalkLength;
-    int stepsBeforeApplyingTikhonov;
-    int stepsBeforeUsingMaximalSpheres;
-    bool solveDoubleSided; // NOTE: this flag should be set to true if domain is open
-    bool useGradientControlVariates;
-    bool useGradientAntitheticVariates;
-    bool useCosineSamplingForDerivatives;
-    bool ignoreAbsorbingBoundaryContribution;
-    bool ignoreReflectingBoundaryContribution;
-    bool ignoreSourceContribution;
-    bool printLogs;
+template <size_t DIM>
+struct Node {
+    Vector<DIM> pt;
+    float       radius;
+    Vector<DIM> neumann_pt;
 };
 
 template <typename T, size_t DIM>
@@ -98,15 +92,7 @@ struct WalkState {
 
     // members
     std::unique_ptr<GreensFnBall<DIM>> greensFn;
-    Vector<DIM> currentPt;
-    Vector<DIM> currentNormal;
-    Vector<DIM> prevDirection;
-    float prevDistance;
-    float throughput;
-    bool onReflectingBoundary;
-    T totalReflectingBoundaryContribution;
-    T totalSourceContribution;
-    int walkLength;
+    std::vector<Node<DIM>> nodes;
 };
 
 enum class WalkCompletionCode {
@@ -149,6 +135,14 @@ public:
 
     // adds gradient estimate to running sum
     void addGradientEstimate(const T *boundaryEstimate, const T *sourceEstimate) {
+        //==
+        Vector<DIM> gradientSolution;
+        for (int i = 0; i < DIM; i++) {
+            gradientSolution[i] = boundaryEstimate[i] + sourceEstimate[i];
+        }
+        gradientSolutions.push_back(gradientSolution);
+        //==
+
         nGradientEstimates += 1;
         for (int i = 0; i < DIM; i++) {
             update(boundaryEstimate[i] + sourceEstimate[i], gradientMean[i],
@@ -158,6 +152,13 @@ public:
 
     // adds gradient estimate to running sum
     void addGradientEstimate(const T *estimate) {
+        //==
+        Vector<DIM> gradientSolution;
+        for (int i = 0; i < DIM; i++) {
+            gradientSolution[i] = estimate[i];
+        }
+        gradientSolutions.push_back(gradientSolution);
+        //==
         nGradientEstimates += 1;
         for (int i = 0; i < DIM; i++) {
             update(estimate[i], gradientMean[i], gradientM2[i], nGradientEstimates);
@@ -193,6 +194,10 @@ public:
     // returns estimated gradient
     const T* getEstimatedGradient() const {
         return gradientMean;
+    }
+
+    const std::vector<Vector<DIM>> &getGradientSolutions() const {
+        return gradientSolutions;
     }
 
     // returns variance of estimated gradient
@@ -235,6 +240,7 @@ public:
         return (float)totalWalkLength/N;
     }
 
+    std::vector<Node<DIM>> nodes;
 protected:
     // updates statistics
     void update(const T& estimate, T& mean, T& M2, int N) {
@@ -251,6 +257,7 @@ protected:
     T totalDerivativeContribution;
     int nSolutionEstimates, nGradientEstimates;
     int totalWalkLength;
+    std::vector<Vector<DIM>> gradientSolutions;
 };
 
 enum class SampleType {
