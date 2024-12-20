@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <zombie/core/pde.h>
-#include <zombie/core/geometric_queries.h>
 #include <zombie/core/distributions.h>
+#include <zombie/core/geometric_queries.h>
+#include <zombie/core/pde.h>
 
 #define RADIUS_SHRINK_PERCENTAGE 0.99f
 
@@ -20,22 +20,21 @@ struct WalkSettings {
     // constructors
     WalkSettings(float epsilonShellForAbsorbingBoundary_,
                  float epsilonShellForReflectingBoundary_,
-                 int maxWalkLength_, bool solveDoubleSided_):
-                 epsilonShellForAbsorbingBoundary(epsilonShellForAbsorbingBoundary_),
-                 epsilonShellForReflectingBoundary(epsilonShellForReflectingBoundary_),
-                 silhouettePrecision(1e-3f),
-                 russianRouletteThreshold(0.0f),
-                 maxWalkLength(maxWalkLength_),
-                 stepsBeforeApplyingTikhonov(maxWalkLength_),
-                 stepsBeforeUsingMaximalSpheres(maxWalkLength_),
-                 solveDoubleSided(solveDoubleSided_),
-                 useGradientControlVariates(true),
-                 useGradientAntitheticVariates(true),
-                 useCosineSamplingForDerivatives(false),
-                 ignoreAbsorbingBoundaryContribution(false),
-                 ignoreReflectingBoundaryContribution(false),
-                 ignoreSourceContribution(false),
-                 printLogs(false) {}
+                 int maxWalkLength_, bool solveDoubleSided_) : epsilonShellForAbsorbingBoundary(epsilonShellForAbsorbingBoundary_),
+                                                               epsilonShellForReflectingBoundary(epsilonShellForReflectingBoundary_),
+                                                               silhouettePrecision(1e-3f),
+                                                               russianRouletteThreshold(0.0f),
+                                                               maxWalkLength(maxWalkLength_),
+                                                               stepsBeforeApplyingTikhonov(maxWalkLength_),
+                                                               stepsBeforeUsingMaximalSpheres(maxWalkLength_),
+                                                               solveDoubleSided(solveDoubleSided_),
+                                                               useGradientControlVariates(true),
+                                                               useGradientAntitheticVariates(true),
+                                                               useCosineSamplingForDerivatives(false),
+                                                               ignoreAbsorbingBoundaryContribution(false),
+                                                               ignoreReflectingBoundaryContribution(false),
+                                                               ignoreSourceContribution(false),
+                                                               printLogs(false) {}
     WalkSettings(float epsilonShellForAbsorbingBoundary_,
                  float epsilonShellForReflectingBoundary_,
                  float silhouettePrecision_, float russianRouletteThreshold_,
@@ -44,28 +43,40 @@ struct WalkSettings {
                  bool useGradientControlVariates_, bool useGradientAntitheticVariates_,
                  bool useCosineSamplingForDerivatives_, bool ignoreAbsorbingBoundaryContribution_,
                  bool ignoreReflectingBoundaryContribution_, bool ignoreSourceContribution_,
-                 bool printLogs_):
-                 epsilonShellForAbsorbingBoundary(epsilonShellForAbsorbingBoundary_),
-                 epsilonShellForReflectingBoundary(epsilonShellForReflectingBoundary_),
-                 silhouettePrecision(silhouettePrecision_),
-                 russianRouletteThreshold(russianRouletteThreshold_),
-                 maxWalkLength(maxWalkLength_),
-                 stepsBeforeApplyingTikhonov(stepsBeforeApplyingTikhonov_),
-                 stepsBeforeUsingMaximalSpheres(stepsBeforeUsingMaximalSpheres_),
-                 solveDoubleSided(solveDoubleSided_),
-                 useGradientControlVariates(useGradientControlVariates_),
-                 useGradientAntitheticVariates(useGradientAntitheticVariates_),
-                 useCosineSamplingForDerivatives(useCosineSamplingForDerivatives_),
-                 ignoreAbsorbingBoundaryContribution(ignoreAbsorbingBoundaryContribution_),
-                 ignoreReflectingBoundaryContribution(ignoreReflectingBoundaryContribution_),
-                 ignoreSourceContribution(ignoreSourceContribution_),
-                 printLogs(printLogs_) {}
+                 bool printLogs_) : epsilonShellForAbsorbingBoundary(epsilonShellForAbsorbingBoundary_),
+                                    epsilonShellForReflectingBoundary(epsilonShellForReflectingBoundary_),
+                                    silhouettePrecision(silhouettePrecision_),
+                                    russianRouletteThreshold(russianRouletteThreshold_),
+                                    maxWalkLength(maxWalkLength_),
+                                    stepsBeforeApplyingTikhonov(stepsBeforeApplyingTikhonov_),
+                                    stepsBeforeUsingMaximalSpheres(stepsBeforeUsingMaximalSpheres_),
+                                    solveDoubleSided(solveDoubleSided_),
+                                    useGradientControlVariates(useGradientControlVariates_),
+                                    useGradientAntitheticVariates(useGradientAntitheticVariates_),
+                                    useCosineSamplingForDerivatives(useCosineSamplingForDerivatives_),
+                                    ignoreAbsorbingBoundaryContribution(ignoreAbsorbingBoundaryContribution_),
+                                    ignoreReflectingBoundaryContribution(ignoreReflectingBoundaryContribution_),
+                                    ignoreSourceContribution(ignoreSourceContribution_),
+                                    printLogs(printLogs_) {}
 
     // members
     float epsilonShellForAbsorbingBoundary;
     float epsilonShellForReflectingBoundary;
     float silhouettePrecision;
     float russianRouletteThreshold;
+    int   maxWalkLength;
+    int   stepsBeforeApplyingTikhonov;
+    int   stepsBeforeUsingMaximalSpheres;
+    bool  solveDoubleSided; // NOTE: this flag should be set to true if domain is open
+    bool  useGradientControlVariates;
+    bool  useGradientAntitheticVariates;
+    bool  useCosineSamplingForDerivatives;
+    bool  ignoreAbsorbingBoundaryContribution;
+    bool  ignoreReflectingBoundaryContribution;
+    bool  ignoreSourceContribution;
+    bool  printLogs;
+};
+
 template <size_t DIM>
 struct Node {
     Vector<DIM> pt;
@@ -76,22 +87,31 @@ struct Node {
 template <typename T, size_t DIM>
 struct WalkState {
     // constructor
-    WalkState(const Vector<DIM>& currentPt_, const Vector<DIM>& currentNormal_,
-              const Vector<DIM>& prevDirection_, float prevDistance_, float throughput_,
-              bool onReflectingBoundary_, int walkLength_):
-              greensFn(nullptr),
-              currentPt(currentPt_),
-              currentNormal(currentNormal_),
-              prevDirection(prevDirection_),
-              prevDistance(prevDistance_),
-              throughput(throughput_),
-              onReflectingBoundary(onReflectingBoundary_),
-              totalReflectingBoundaryContribution(0.0f),
-              totalSourceContribution(0.0f),
-              walkLength(walkLength_) {}
+    WalkState(const Vector<DIM> &currentPt_, const Vector<DIM> &currentNormal_,
+              const Vector<DIM> &prevDirection_, float prevDistance_, float throughput_,
+              bool onReflectingBoundary_, int walkLength_) : greensFn(nullptr),
+                                                             currentPt(currentPt_),
+                                                             currentNormal(currentNormal_),
+                                                             prevDirection(prevDirection_),
+                                                             prevDistance(prevDistance_),
+                                                             throughput(throughput_),
+                                                             onReflectingBoundary(onReflectingBoundary_),
+                                                             totalReflectingBoundaryContribution(0.0f),
+                                                             totalSourceContribution(0.0f),
+                                                             walkLength(walkLength_) {}
 
     // members
     std::unique_ptr<GreensFnBall<DIM>> greensFn;
+    Vector<DIM>                        currentPt;
+    Vector<DIM>                        currentNormal;
+    Vector<DIM>                        prevDirection;
+    float                              prevDistance;
+    float                              throughput;
+    bool                               onReflectingBoundary;
+    T                                  totalReflectingBoundaryContribution;
+    T                                  totalSourceContribution;
+    int                                walkLength;
+
     std::vector<Node<DIM>> nodes;
 };
 
@@ -115,20 +135,20 @@ public:
     // resets statistics
     void reset() {
         solutionMean = T(0.0f);
-        solutionM2 = T(0.0f);
+        solutionM2   = T(0.0f);
         for (int i = 0; i < DIM; i++) {
             gradientMean[i] = T(0.0f);
-            gradientM2[i] = T(0.0f);
+            gradientM2[i]   = T(0.0f);
         }
         totalFirstSourceContribution = T(0.0f);
-        totalDerivativeContribution = T(0.0f);
-        nSolutionEstimates = 0;
-        nGradientEstimates = 0;
-        totalWalkLength = 0;
+        totalDerivativeContribution  = T(0.0f);
+        nSolutionEstimates           = 0;
+        nGradientEstimates           = 0;
+        totalWalkLength              = 0;
     }
 
     // adds solution estimate to running sum
-    void addSolutionEstimate(const T& estimate) {
+    void addSolutionEstimate(const T &estimate) {
         nSolutionEstimates += 1;
         update(estimate, solutionMean, solutionM2, nSolutionEstimates);
     }
@@ -166,12 +186,12 @@ public:
     }
 
     // adds source contribution for the first step to running sum
-    void addFirstSourceContribution(const T& contribution) {
+    void addFirstSourceContribution(const T &contribution) {
         totalFirstSourceContribution += contribution;
     }
 
     // adds derivative contribution to running sum
-    void addDerivativeContribution(const T& contribution) {
+    void addDerivativeContribution(const T &contribution) {
         totalDerivativeContribution += contribution;
     }
 
@@ -188,11 +208,11 @@ public:
     // returns variance of estimated solution
     T getEstimatedSolutionVariance() const {
         int N = std::max(1, nSolutionEstimates - 1);
-        return solutionM2/N;
+        return solutionM2 / N;
     }
 
     // returns estimated gradient
-    const T* getEstimatedGradient() const {
+    const T *getEstimatedGradient() const {
         return gradientMean;
     }
 
@@ -202,11 +222,11 @@ public:
 
     // returns variance of estimated gradient
     std::vector<T> getEstimatedGradientVariance() const {
-        int N = std::max(1, nGradientEstimates - 1);
+        int            N = std::max(1, nGradientEstimates - 1);
         std::vector<T> variance(DIM);
 
         for (int i = 0; i < DIM; i++) {
-            variance[i] = gradientM2[i]/N;
+            variance[i] = gradientM2[i] / N;
         }
 
         return variance;
@@ -215,13 +235,13 @@ public:
     // returns mean source contribution for the first step
     T getMeanFirstSourceContribution() const {
         int N = std::max(1, nSolutionEstimates);
-        return totalFirstSourceContribution/N;
+        return totalFirstSourceContribution / N;
     }
 
     // returns estimated derivative
     T getEstimatedDerivative() const {
         int N = std::max(1, nSolutionEstimates);
-        return totalDerivativeContribution/N;
+        return totalDerivativeContribution / N;
     }
 
     // returns number of solution estimates
@@ -237,27 +257,30 @@ public:
     // returns mean walk length
     float getMeanWalkLength() const {
         int N = std::max(1, nSolutionEstimates);
-        return (float)totalWalkLength/N;
+        return (float) totalWalkLength / N;
     }
 
     std::vector<Node<DIM>> nodes;
+
 protected:
     // updates statistics
-    void update(const T& estimate, T& mean, T& M2, int N) {
+    void update(const T &estimate, T &mean, T &M2, int N) {
         T delta = estimate - mean;
-        mean += delta/N;
+        mean += delta / N;
         T delta2 = estimate - mean;
-        M2 += delta*delta2;
+        M2 += delta * delta2;
     }
 
     // members
-    T solutionMean, solutionM2;
-    T gradientMean[DIM], gradientM2[DIM];
-    T totalFirstSourceContribution;
-    T totalDerivativeContribution;
+    T   solutionMean, solutionM2;
+    T   gradientMean[DIM], gradientM2[DIM];
+    T   totalFirstSourceContribution;
+    T   totalDerivativeContribution;
     int nSolutionEstimates, nGradientEstimates;
     int totalWalkLength;
+
     std::vector<Vector<DIM>> gradientSolutions;
+    
 };
 
 enum class SampleType {
@@ -269,42 +292,41 @@ enum class SampleType {
 template <typename T, size_t DIM>
 struct SamplePoint {
     // constructor
-    SamplePoint(const Vector<DIM>& pt_, const Vector<DIM>& normal_,
+    SamplePoint(const Vector<DIM> &pt_, const Vector<DIM> &normal_,
                 SampleType type_, float pdf_, float distToAbsorbingBoundary_,
-                float distToReflectingBoundary_):
-                pt(pt_), normal(normal_), type(type_), pdf(pdf_),
-                distToAbsorbingBoundary(distToAbsorbingBoundary_),
-                distToReflectingBoundary(distToReflectingBoundary_),
-                firstSphereRadius(0.0f), estimateBoundaryNormalAligned(false) {
+                float distToReflectingBoundary_) : pt(pt_), normal(normal_), type(type_), pdf(pdf_),
+                                                   distToAbsorbingBoundary(distToAbsorbingBoundary_),
+                                                   distToReflectingBoundary(distToReflectingBoundary_),
+                                                   firstSphereRadius(0.0f), estimateBoundaryNormalAligned(false) {
         reset();
     }
 
     // resets solution data
     void reset() {
-        auto now = std::chrono::high_resolution_clock::now();
-        uint64_t seed = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
-        sampler = pcg32(seed);
-        statistics = nullptr;
-        solution = T(0.0f);
+        auto     now     = std::chrono::high_resolution_clock::now();
+        uint64_t seed    = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+        sampler          = pcg32(seed);
+        statistics       = nullptr;
+        solution         = T(0.0f);
         normalDerivative = T(0.0f);
-        source = T(0.0f);
-        robin = T(0.0f);
-        robinCoeff = 0.0f;
+        source           = T(0.0f);
+        robin            = T(0.0f);
+        robinCoeff       = 0.0f;
     }
 
     // members
-    pcg32 sampler;
-    Vector<DIM> pt;
-    Vector<DIM> normal;
-    SampleType type;
-    float pdf;
-    float distToAbsorbingBoundary;
-    float distToReflectingBoundary;
-    float firstSphereRadius; // populated by WoSt
-    bool estimateBoundaryNormalAligned;
-    std::shared_ptr<SampleStatistics<T, DIM>> statistics; // populated by WoSt
-    T solution, normalDerivative, source, robin; // not populated by WoSt, but available for downstream use (e.g. BVC)
-    float robinCoeff; // not populated by WoSt, but available for downstream use (e.g. BVC)
+    pcg32                                     sampler;
+    Vector<DIM>                               pt;
+    Vector<DIM>                               normal;
+    SampleType                                type;
+    float                                     pdf;
+    float                                     distToAbsorbingBoundary;
+    float                                     distToReflectingBoundary;
+    float                                     firstSphereRadius; // populated by WoSt
+    bool                                      estimateBoundaryNormalAligned;
+    std::shared_ptr<SampleStatistics<T, DIM>> statistics;                                // populated by WoSt
+    T                                         solution, normalDerivative, source, robin; // not populated by WoSt, but available for downstream use (e.g. BVC)
+    float                                     robinCoeff;                                // not populated by WoSt, but available for downstream use (e.g. BVC)
 };
 
 enum class EstimationQuantity {
@@ -316,19 +338,18 @@ enum class EstimationQuantity {
 template <size_t DIM>
 struct SampleEstimationData {
     // constructors
-    SampleEstimationData(): nWalks(0), estimationQuantity(EstimationQuantity::None),
-                            directionForDerivative(Vector<DIM>::Zero()) {
+    SampleEstimationData() : nWalks(0), estimationQuantity(EstimationQuantity::None),
+                             directionForDerivative(Vector<DIM>::Zero()) {
         directionForDerivative(0) = 1.0f;
     }
     SampleEstimationData(int nWalks_, EstimationQuantity estimationQuantity_,
-                         Vector<DIM> directionForDerivative_=Vector<DIM>::Zero()):
-                         nWalks(nWalks_), estimationQuantity(estimationQuantity_),
-                         directionForDerivative(directionForDerivative_) {}
+                         Vector<DIM> directionForDerivative_ = Vector<DIM>::Zero()) : nWalks(nWalks_), estimationQuantity(estimationQuantity_),
+                                                                                      directionForDerivative(directionForDerivative_) {}
 
     // members
-    int nWalks;
+    int                nWalks;
     EstimationQuantity estimationQuantity;
-    Vector<DIM> directionForDerivative; // needed only for computing direction derivatives
+    Vector<DIM>        directionForDerivative; // needed only for computing direction derivatives
 };
 
-} // zombie
+} // namespace zombie
