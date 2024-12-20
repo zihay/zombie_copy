@@ -92,7 +92,7 @@ void loadBoundaryMesh(const std::string& objFile,
 }
 
 template <>
-void loadBoundaryMesh<2>(const std::string& objFile,
+inline void loadBoundaryMesh<2>(const std::string& objFile,
                          std::vector<Vector2>& positions,
                          std::vector<std::vector<size_t>>& indices)
 {
@@ -119,7 +119,7 @@ void loadBoundaryMesh<2>(const std::string& objFile,
 }
 
 template <>
-void loadBoundaryMesh<3>(const std::string& objFile,
+inline void loadBoundaryMesh<3>(const std::string& objFile,
                          std::vector<Vector3>& positions,
                          std::vector<std::vector<size_t>>& indices)
 {
@@ -147,7 +147,7 @@ void loadBoundaryMesh<3>(const std::string& objFile,
 }
 
 template <size_t DIM>
-void normalize(std::vector<Vector<DIM>>& positions)
+inline void normalize(std::vector<Vector<DIM>>& positions)
 {
     int V = (int)positions.size();
     Vector<DIM> cm = Vector<DIM>::Zero();
@@ -167,7 +167,7 @@ void normalize(std::vector<Vector<DIM>>& positions)
     }
 }
 
-void flipOrientation(std::vector<std::vector<size_t>>& indices)
+inline void flipOrientation(std::vector<std::vector<size_t>>& indices)
 {
     for (int i = 0; i < (int)indices.size(); i++) {
         std::swap(indices[i][0], indices[i][1]);
@@ -1043,7 +1043,7 @@ void populateGeometricQueries(const AbsorbingBoundaryAggregateType *absorbingBou
 }
 
 template <size_t DIM, typename NeumannBoundaryAggregateType>
-void populateStarRadiusQueryForNeumannBoundary(const NeumannBoundaryAggregateType *reflectingBoundaryAggregate,
+inline void populateStarRadiusQueryForNeumannBoundary(const NeumannBoundaryAggregateType *reflectingBoundaryAggregate,
                                                GeometricQueries<DIM>& geometricQueries)
 {
     geometricQueries.computeStarRadiusForReflectingBoundary = [reflectingBoundaryAggregate](
@@ -1068,7 +1068,7 @@ void populateStarRadiusQueryForNeumannBoundary(const NeumannBoundaryAggregateTyp
 }
 
 template <size_t DIM, typename RobinBoundaryAggregateType>
-void populateStarRadiusQueryForRobinBoundary(const RobinBoundaryAggregateType *reflectingBoundaryAggregate,
+inline void populateStarRadiusQueryForRobinBoundary(const RobinBoundaryAggregateType *reflectingBoundaryAggregate,
                                              GeometricQueries<DIM>& geometricQueries)
 {
     geometricQueries.computeStarRadiusForReflectingBoundary = [reflectingBoundaryAggregate](
@@ -1091,7 +1091,7 @@ void populateStarRadiusQueryForRobinBoundary(const RobinBoundaryAggregateType *r
 }
 
 template <size_t DIM>
-void populateGeometricQueries(FcpwBoundaryHandler<DIM, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries(FcpwBoundaryHandler<DIM, false>& absorbingBoundaryHandler,
                               const std::pair<Vector<DIM>, Vector<DIM>>& boundingBoxExtents,
                               GeometricQueries<DIM>& geometricQueries)
 {
@@ -1101,7 +1101,7 @@ void populateGeometricQueries(FcpwBoundaryHandler<DIM, false>& absorbingBoundary
 }
 
 template <size_t DIM, bool useRobinConditions>
-void populateGeometricQueries(const FcpwBoundaryHandler<DIM, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries(const FcpwBoundaryHandler<DIM, false>& absorbingBoundaryHandler,
                               const FcpwBoundaryHandler<DIM, useRobinConditions>& reflectingBoundaryHandler,
                               const std::function<float(float)>& branchTraversalWeight,
                               const std::pair<Vector<DIM>, Vector<DIM>>& boundingBoxExtents,
@@ -1114,7 +1114,7 @@ void populateGeometricQueries(const FcpwBoundaryHandler<DIM, false>& absorbingBo
 }
 
 template <>
-void populateGeometricQueries<2, false>(FcpwBoundaryHandler<2, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries<2, false>(FcpwBoundaryHandler<2, false>& absorbingBoundaryHandler,
                                         FcpwBoundaryHandler<2, false>& reflectingBoundaryHandler,
                                         const std::function<float(float)>& branchTraversalWeight,
                                         const std::pair<Vector2, Vector2>& boundingBoxExtents,
@@ -1130,7 +1130,7 @@ void populateGeometricQueries<2, false>(FcpwBoundaryHandler<2, false>& absorbing
 }
 
 template <>
-void populateGeometricQueries<3, false>(FcpwBoundaryHandler<3, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries<3, false>(FcpwBoundaryHandler<3, false>& absorbingBoundaryHandler,
                                         FcpwBoundaryHandler<3, false>& reflectingBoundaryHandler,
                                         const std::function<float(float)>& branchTraversalWeight,
                                         const std::pair<Vector3, Vector3>& boundingBoxExtents,
@@ -1146,7 +1146,7 @@ void populateGeometricQueries<3, false>(FcpwBoundaryHandler<3, false>& absorbing
 }
 
 template <>
-void populateGeometricQueries<2, true>(FcpwBoundaryHandler<2, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries<2, true>(FcpwBoundaryHandler<2, false>& absorbingBoundaryHandler,
                                        FcpwBoundaryHandler<2, true>& reflectingBoundaryHandler,
                                        const std::function<float(float)>& branchTraversalWeight,
                                        const std::pair<Vector2, Vector2>& boundingBoxExtents,
@@ -1184,7 +1184,7 @@ void populateGeometricQueries<2, true>(FcpwBoundaryHandler<2, false>& absorbingB
 }
 
 template <>
-void populateGeometricQueries<3, true>(FcpwBoundaryHandler<3, false>& absorbingBoundaryHandler,
+inline void populateGeometricQueries<3, true>(FcpwBoundaryHandler<3, false>& absorbingBoundaryHandler,
                                        FcpwBoundaryHandler<3, true>& reflectingBoundaryHandler,
                                        const std::function<float(float)>& branchTraversalWeight,
                                        const std::pair<Vector3, Vector3>& boundingBoxExtents,
