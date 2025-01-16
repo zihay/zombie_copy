@@ -335,7 +335,7 @@ public:
             fcpw::AggregateType aggregateType = buildBvh ?
                                                 fcpw::AggregateType::Bvh_SurfaceArea :
                                                 fcpw::AggregateType::Baseline;
-            scene.build(aggregateType, enableBvhVectorization, true, true);
+            scene.build(aggregateType, enableBvhVectorization, false, true);
         }
     }
 

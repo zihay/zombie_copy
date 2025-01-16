@@ -63,7 +63,7 @@ std::unique_ptr<RobinBvh<DIM, RobinBvhNode<DIM>, PrimitiveType>> initializeRobin
                                                     PolygonSoup<DIM>& soup,
                                                     std::vector<PrimitiveType *>& primitives,
                                                     std::vector<SilhouettePrimitive<DIM> *>& silhouettes,
-                                                    bool printStats=true, bool packLeaves=false, int leafSize=4);
+                                                    bool printStats=false, bool packLeaves=false, int leafSize=4);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Implementation
@@ -579,7 +579,7 @@ std::unique_ptr<RobinBvh<DIM, RobinBvhNode<DIM>, PrimitiveType>> initializeRobin
         if (printStats) {
             high_resolution_clock::time_point t2 = high_resolution_clock::now();
             duration<double> timeSpan = duration_cast<duration<double>>(t2 - t1);
-            std::cout << "RobinBvh construction time: " << timeSpan.count() << " seconds" << std::endl;
+            // std::cout << "RobinBvh construction time: " << timeSpan.count() << " seconds" << std::endl;
             bvh->printStats();
         }
 
